@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>b</title>
+  <style>
+    td {
+      width: 50px;
+      height: 75px;
+      font-size: 30px;
+      text-align: center;
+      border: 1px solid black;
+      border-radius: 5px;
+    }
+    .card {
+      background-image: url(card.png);
+      background-size: 50px 75px;
+    }
+  </style>
+
+  <script>
+    let cards = [], prevCard, flipTimer;
+
+    Array.prototype.shuffle = function() {
+      for(let i = this.length - 1; i >= 0; i--) {
+        let r = Math.floor(Math.random() * (i + 1));
+        let s = this[i];
+        this[i] = this[r];
+        this[r] = s;
+      }
+      return this;
+    }
+    function init() {
+      for(let i = 1; i < 14; i++)
+      {
+        cards.push(i);
+        cards.push(i);
+        cards.push(i);
+        cards.push(i);
+      }
+      cards.shuffle();
+
+      const table = document.getElementById("table");
+      for(let i = 0; i < 4; i++) {
+        let tr = document.createElement("tr");
+        for(let j = 0; j < 13; j++) {
+          let td = document.createElement("td");
+          let value = cards[i * 13 + j];
+          td.value = value;
+          td.className = "card";
+          td.onclick = flip;
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+    }
+
+    function flip(e) {
+      let src = e.target;
+      if(flipTimer || src.textContent != "") {
+        return;
+      }
+      let value = src.value;
+      src.className = "";
+      src.textContent = value;
+      if(prevCard == null) {
+        prevCard = src;
+        return;
+      }
+
+      if(prevCard.value === value) {
+        prevCard = null;
+        // clearTimeout(flipTimer);
+      } else {
+        flipTimer = setTimeout(function() {
+          src.className = "card";
+          src.textContent = "";
+          prevCard.className = "card";
+          prevCard.textContent = "";
+          prevCard = null;
+          flipTimer = NaN;
+        }, 1000);
+      }
+    }
+
+  </script>
+</head>
+
+<body onload="init()">
+  <table id="table"></table>
+</body>
+</html>

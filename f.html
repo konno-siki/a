@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>f</title>
+
+  <script>
+    let W = 31, H = 31,GAMECLEAR = 1, GAMEOVER = 2;
+    let ctx, keyCode = 0, maze = [], player, aliens = [];
+    let timer = NaN, status = 0;
+    let scroller = new Scroller();
+    Player.prototype = scroller;
+    Alien.prototype = scroller;
+
+    function Scroller() {
+      this.doScroll = function() {
+        if(this.dx == 0 && this.dy == 0) {
+          return;
+        }
+
+        if(++this.scrollCount >= 5) {
+          this.x = this.x + this.dx;
+          this.y = this.y + this.dy;
+          this.dx = 0;
+          this.dy = 0;
+          this.scrollCount = 0;
+        }
+      }
+
+      this.getScrollX = function() {
+        return this.x * 50 + this.dx + this.scrollCount * 10;
+      }
+
+      this.getScrollY = function() {
+        return this.y * 50 + this.dy + this.scrollCount * 10;
+      }
+    }
+
+    function Player(x, y) {
+      this.x = x;
+      this.y = y;
+      this.dx = 0;
+      this.dy = 0;
+      this.dir = 0;
+      this.scrollCount = 0;
+
+      this.update = function() {
+        this.doScroll();
+        if(this.scrollCount > 0) {
+          return;
+        }
+
+        if(this.x == W - 2 && this.y == W -2) {
+          clearInterval(timer);
+          status = GAMECLEAR;
+          document.getElementById("bgm").pause();
+          repaint();
+        }
+
+        this.dx = 0;
+        this.dy = 0;
+        let nx = 0, ny = 0;
+        switch(keyCode) {
+          case 37:
+            nx -= 1; ny = 0;
+            dir = 2;
+          case 38:
+            nx = 0; ny -= 1;
+            dir = 0;
+          case 39:
+            nx += 1; ny = 0;
+            dir = 3;
+          case 40:
+            nx = 0; ny += 1;
+            dir =1;
+        }
+
+        if(maze[this.y + ny][this.x + x] == 0) {
+          this.dx = nx;
+          this.dy = ny;
+        }
+      }
+
+      this.paint = function(gc, x, y, w, h) {
+        let img = document.getElementById("hero" + this.dir);
+        gc.drawImage(img, x, y, w, h);
+      }
+    }
+  </script>
+</head>
+
+<body onload="init()">
+  <audio src="Dungeon/Emergency.mp3" id="bgm" loop="loop"></audio>
+  <canvas id="canvas" width="900" height="600"></canvas>
+  <img id="start" src="Dungeon/start.png" onclick="go()"></br>
+  <img id="arrow" src="Dungeon/arrows.png" style="display: none">
+  <img id="hero0" src="Dungeon/hero0.png" style="display: none">
+  <img id="hero1" src="Dungeon/hero1.png" style="display: none">
+  <img id="hero2" src="Dungeon/hero2.png" style="display: none">
+  <img id="hero3" src="Dungeon/hero3.png" style="display: none">
+  <img id="alien0" src="Dungeon/alien0.png" style="display: none">
+  <img id="alien1" src="Dungeon/alien1.png" style="display: none">
+  <img id="alien2" src="Dungeon/alien2.png" style="display: none">
+  <img id="alien3" src="Dungeon/alien3.png" style="display: none">
+</body>
+</html>

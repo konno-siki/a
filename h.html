@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>h</title>
+  <style>
+    td {
+      width: 40px;
+      height: 60px;
+      font-size: 30px;
+      text-align: center;
+      border: 1px solid black;
+    }
+    .card {
+      background-image: url(card.png);
+      background-size: 40px 60px;
+    }
+  </style>
+
+  <script>
+    let cards = [], firstCard, flipTimer;
+
+    Array.prototype.shuffle = function() {
+      for(let i = this.length - 1; i >= 0; i--) {
+        let r = Math.floor(Math.random() * (i + 1));
+        let src = this[i];
+        this[i] = this[r]
+        this[r] = src;
+      }
+      return this;
+    }
+
+    function init() {
+      for(let i = 1; i <= 13; i++) {
+        cards.push(i);
+        cards.push(i);
+        cards.push(i);
+        cards.push(i);
+      }
+
+      cards.shuffle();
+
+      let table = document.getElementById("table");
+      for(let y = 0; y < 4; y++) {
+        let tr = document.createElement("tr");
+        for(let x = 0; x < 13; x++) {
+          let td = document.createElement("td");
+          let index = y * 13 + x;
+          td.value = cards[index];
+          td.className = "card";
+          td.onclick = click;
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+    }
+
+    function click(e) {
+      if(flipTimer) {
+        return;
+      }
+
+      let td = e.target;
+      td.className = "";
+      td.textContent = td.value;
+      if(!firstCard) {
+        firstCard = td;
+        return;
+      }
+      
+      if(firstCard.value == td.value) {
+        firstCard = null;
+      } else {
+        flipTimer = setTimeout(function() {
+          firstCard.className = "card";
+          firstCard.textContent = "";
+          td.className = "card";
+          td.textContent = "";
+          firstCard = null;
+          flipTimer = null;
+        }, 1000);
+      }
+    }
+  </script>
+</head>
+
+<body onload="init()">
+  <table id="table"></table>
+</body>
+</html>

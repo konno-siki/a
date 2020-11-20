@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Othello</title>
+  <style>
+    #board {
+      background-color: black;
+    }
+    .cell {
+      background-color: green;
+      width: 60px;
+      height: 60px;
+      margin: 2px;
+      font-size: 50px;
+      text-align: center;
+    }
+    .black {
+      color: black;
+    }
+    .white {
+      color: white;
+    }
+  </style>
+    
+  <script>
+    const WeightData = [
+      [30, -12, 0, -1, -1, 0, -12, 30],
+      [-12, -15, -3, -3, -3, -3, -15, -12],
+      [0, -3, 0, -1, -1, 0, -3, 0],
+      [-1, -3, -1, -1, -1, -1, -3, -1],
+      [-1, -3, -1, -1, -1, -1, -3, -1],
+      [0, -3, 0, -1, -1, 0, -3, 0],
+      [-12, -15, -3, -3, -3, -3, -15, -12],
+      [30, -12, 0, -1, -1, 0, -12, 30]
+    ];
+    const WeightData1 = [
+      [30, 30, 15, 8, 4, 2, 1, 30],
+      [30, -15, -3, -3, -3, -3, -15, -12],
+      [15, -3, 0, -1, -1, 0, -3, 0],
+      [8, -3, -1, -1, -1, -1, -3, -1],
+      [4, -3, -1, -1, -1, -1, -3, -1],
+      [2, -3, 0, -1, -1, 0, -3, 0],
+      [1, -15, -3, -3, -3, -3, -15, -12],
+      [30, -12, 0, -1, -1, 0, -12, 30]
+    ];
+    const WeightData2 = [
+      [30, 1, 2, 4, 8, 15, 30, 30],
+      [-12, -15, -3, -3, -3, -3, -15, 30],
+      [0, -3, 0, -1, -1, 0, -3, 15],
+      [-1, -3, -1, -1, -1, -1, -3, 8],
+      [-1, -3, -1, -1, -1, -1, -3, 4],
+      [0, -3, 0, -1, -1, 0, -3, 2],
+      [-12, -15, -3, -3, -3, -3, -15, 1],
+      [30, -12, 0, -1, -1, 0, -12, 30]
+    ];
+    const WeightData3 = [
+      [30, -12, 0, -1, -1, 0, -12, 30],
+      [1, -15, -3, -3, -3, -3, -15, -12],
+      [2, -3, 0, -1, -1, 0, -3, 0],
+      [4, -3, -1, -1, -1, -1, -3, -1],
+      [8, -3, -1, -1, -1, -1, -3, -1],
+      [15, -3, 0, -1, -1, 0, -3, 0],
+      [30, -15, -3, -3, -3, -3, -15, -12],
+      [30, 30, 15, 8, 4, 2, 1, 30]
+    ];
+    const WeightData4 = [
+      [30, -12, 0, -1, -1, 0, -12, 30],
+      [-12, -15, -3, -3, -3, -3, -15, 1],
+      [0, -3, 0, -1, -1, 0, -3, 2],
+      [-1, -3, -1, -1, -1, -1, -3, 4],
+      [-1, -3, -1, -1, -1, -1, -3, 8],
+      [0, -3, 0, -1, -1, 0, -3, 15],
+      [-12, -15, -3, -3, -3, -3, -15, 30],
+      [30, 1, 2, 4, 8, 15, 30, 30]
+    ];
+
+    let data = [], myTurn = false;
+    const BLACK = 1, WHITE = 2;
+
+    function init() {
+      let board = document.getElementById("board");
+      for(let y = 0; y < 8; y++) {
+        let tr = document.createElement("tr");
+        data[y] = [0, 0, 0, 0, 0, 0, 0, 0];
+        for(let x = 0; x < 8; x++) {
+          let td = document.createElement("td");
+          td.className = "cell";
+          td.id = "cell" + y + x;
+          td.onclick = clicked;
+          tr.appendChild(td);
+        }
+        board.appendChild(tr);
+      }
+      put(3, 3, WHITE);
+      put(3, 4, BLACK);
+      put(4, 3, BLACK);
+      put(4, 4, WHITE);
+      update();
+    }
+
+    function update() {
+      let numBlack = 0, numWhite = 0;
+      for(let y = 0; y < 8; y++) {
+        for(let x = 0; x < 8; x++) {
+          if(data[y][x] == BLACK) {
+            numBlack++;
+          }
+          if(data[y][x] == WHITE) {
+            numWhite++;
+          }
+        }
+      }
+      document.getElementById("numBlack").textContent = numBlack;
+      document.getElementById("numWhite").textContent = numWhite;
+
+      let blackFlip = canFlip(BLACK);
+      let whiteFlip = canFlip(WHITE);
+
+      if(numBlack + numWhite == 64 || (!blackFlip && !whiteFlip)) {
+        showMessage("ゲームオーバー");
+      } else if(!blackFlip) {
+        showMessage("黒スキップ");
+        myTurn = false;
+      } else if(!whiteFlip) {
+        showMessage("白スキップ");
+        myTurn = true;
+      } else {
+        myTurn = !myTurn;
+      }
+      if(!myTurn) {
+        setTimeout(think, 1000);
+      }
+    }
+
+    function showMessage(src) {
+      document.getElementById("message").textContent = src;
+      setTimeout(function() {
+        document.getElementById("message").textContent = "";
+      }, 2000);
+    }
+
+    function clicked(e) {
+      if(!myTurn) {
+        return;
+      }
+      let id = e.target.id;
+      let i = parseInt(id.charAt(4));
+      let j = parseInt(id.charAt(5));
+      let flipped = getFlipCells(i, j, BLACK);
+      if(flipped.length > 0) {
+        for(let k = 0; k < flipped.length; k++) {
+          put(flipped[k][0], flipped[k][1], BLACK);
+        }
+        put(i, j, BLACK);
+        update();
+      }
+    }
+
+    function put(i, j, color) {
+      let td = document.getElementById("cell" + i + j);
+      td.textContent = "●";
+      td.className = "cell" + (color == BLACK?" black":" white");
+      data[i][j] = color;
+    }
+
+    function think() {
+      let highScore = -1000, px = -1, py = -1;
+      for(let x = 0; x < 8; x++) {
+        for(let y = 0; y < 8; y++) {
+          let tmpData = copyData();
+          let flipped = getFlipCells(x, y, WHITE);
+          if(flipped.length > 0) {
+            for(let k = 0; k < flipped.length; k++) {
+              let i = flipped[k][0];
+              let j = flipped[k][1];
+              tmpData[i][j] = WHITE;
+              tmpData[x][y] = WHITE;
+            }
+            let score = calcWeightData(tmpData);
+            if(score > highScore) {
+              highScore = score;
+              px = x;
+              py = y;
+            }
+          }
+        }
+      }
+      if(px >= 0 && py >= 0) {
+        let flipped = getFlipCells(px, py, WHITE);
+        if(flipped.length > 0) {
+          for(let k = 0; k < flipped.length; k++) {
+            put(flipped[k][0], flipped[k][1], WHITE);
+          }
+          put(px, py, WHITE);
+          update();
+        }
+      }
+    }
+
+    function calcWeightData(tmpData) {
+      let score = 0;
+      for(let a = 0; a < 8; a++) {
+        for(let b = 0; b < 8; b++) {
+          if(tmpData[a][b] == WHITE) {
+            if(tmpData[0][0] == WHITE) {
+              score += WeightData1[a][b];
+            } else if(tmpData[0][7] == WHITE) {
+              score += WeightData2[a][b];
+            } else if(tmpData[7][0] == WHITE) {
+              score += WeightData3[a][b];
+            } else if(tmpData[7][7] == WHITE) {
+              score += WeightData4[a][b];
+            } else {
+              score += WeightData[a][b];
+            }
+          }
+        }
+      }
+      return score;
+    }
+
+    function copyData() {
+      let tmpData = [];
+      for(let i = 0; i < 8; i++) {
+        tmpData[i] = [];
+        for(let j = 0; j < 8; j++) {
+          tmpData[i][j] = data[i][j];
+        }
+      }
+      return tmpData;
+    }
+
+    function canFlip(color) {
+      for(let y = 0; y < 8; y++) {
+        for(let x = 0; x < 8; x++) {
+          let flipped = getFlipCells(y, x, color);
+          if(flipped.length > 0) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function getFlipCells(i, j, color) {
+      if(data[i][j] == BLACK || data[i][j] == WHITE) {
+        return [];
+      }
+      const dirs = [
+        [-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]
+      ];
+      let result = [];
+      for(let k = 0; k < dirs.length; k++) {
+        let flipped = getFlipCellsOneDir(i, j, dirs[k][0], dirs[k][1], color);
+        result = result.concat(flipped);
+      }
+      return result;
+    }
+
+    function getFlipCellsOneDir(i, j, px, py, color) {
+      let x = i + px;
+      let y = j + py;
+      let fliped = [];
+      if(x < 0 || y < 0 || x > 7 || y > 7 || data[x][y] == 0 || data[x][y] == color) {
+        return [];
+      }
+      fliped.push([x, y]);
+
+      while(true) {
+        x += px;
+        y += py;
+        if(x < 0 || y < 0 || x > 7 || y > 7 || data[x][y] == 0) {
+          return [];
+        }
+        if(data[x][y] == color) {
+          return fliped;
+        } else {
+          fliped.push([x, y]);
+        }
+      }
+    }
+  </script>
+</head>
+
+<body onload="init()">
+  <h2>
+    黒：<span id="numBlack"></span>枚
+    白：<span id="numWhite"></span>枚
+  </h2>
+  <table id="board"></table>
+  <h2 id="message"></h2>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>a</title>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+    .tile {
+      width: 100px;
+      height: 100px;
+      font-size: 70px;
+      text-align: center;
+      border: 1px solid black;
+    }
+  </style>
+  <script>
+    let tiles = [];
+    function init() {
+      let table = document.getElementById("table");
+      for(let i = 0; i < 5; i++) {
+        let tr = document.createElement("tr");
+        for(let j = 0; j < 5; j++) {
+          let td = document.createElement("td");
+          let index = i * 5 + j;
+          td.index = index;
+          td.value = index;
+          td.textContent = index == 0?"":index;
+          td.className = "tile";
+          td.onclick = clicked;
+          tr.appendChild(td);
+          tiles.push(td);
+        }
+        table.appendChild(tr);
+      }
+      for(let i = 0; i < 10000; i++) {
+        clicked({target: {index: Math.floor(Math.random() * 25)}});
+      }
+    }
+
+    function clicked(e) {
+      let i = e.target.index;
+      if(i % 5 !== 0 && tiles[i - 1].value === 0) {
+        swap(i, i - 1);
+      }
+      if(i > 4 && tiles[i - 5].value === 0) {
+        swap(i, i - 5);
+      }
+      if(i % 5 !== 4 && tiles[i + 1].value === 0) {
+        swap(i, i + 1);
+      }
+      if(i < 20 && tiles[i + 5].value === 0) {
+        swap(i, i + 5);
+      }
+    }
+
+    function swap(x, y) {
+      let i = tiles[x].value;
+      tiles[x].value = tiles[y].value;
+      tiles[x].textContent = tiles[y].textContent;
+      tiles[y].value = i;
+      tiles[y].textContent = i;
+    }
+  </script>
+</head>
+
+<body onload="init()">
+  <p>パネル</p>
+  <table id="table"></table>
+</body>
+</html>
