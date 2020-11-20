@@ -12,32 +12,92 @@
   </style>
 
   <script>
-    let data = [
-      [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
-      [6,0,0,0,0,0,6,6,6,0,0,6,6,6,0,0,0,0,0,6],
-      [6,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,6],
-      [6,0,0,0,6,6,6,6,6,0,0,6,6,6,6,6,0,0,0,6],
-      [6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6],
-      [6,6,6,6,6,6,0,6,6,0,1,6,6,6,6,6,6,6,6,6],
-      [6,6,6,6,6,6,0,6,6,0,0,0,0,0,0,0,0,0,0,6],
-      [6,6,6,6,6,6,0,6,6,0,0,0,0,0,0,0,0,0,0,6],
-      [6,6,6,6,6,6,0,0,2,0,6,2,6,6,6,6,6,6,0,6],
-      [6,6,6,6,6,6,0,0,6,6,6,0,0,0,0,0,0,0,0,6],
-      [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
-    ];
+    let data = [];
     let gc, px = 9, py = 1;
 
+    function title() {
+      gc = document.getElementById("canvas").getContext("2d");
+      gc.fillStyle = "#aaaa55";
+      gc.font = "100px Arial";
+      gc.fillText("Carry it", 240, 200);
+      gc.font = "40px Arial";
+      gc.fillText("click this", 330, 300);
+      onkeydown = mykeydown1;
+    }
+
+    function mykeydown1(e) {
+      if(e.keyCode == 13) {
+        select();
+      }
+    }
+
+    function select() {
+      gc.fillStyle = "#000000";
+      gc.fillRect(0, 0, 800, 440);
+      gc.drawImage(stage1, 300, 50, 200, 50);
+      gc.fillStyle = "#aaaa55";
+      gc.font = "30px Arial";
+      gc.fillText("→ push 1", 520, 80);
+      gc.drawImage(stage2, 300, 170, 200, 50);
+      gc.fillText("→ push 2", 520, 200);
+      gc.drawImage(stage3, 300, 290, 200, 50);
+      gc.fillText("→ push 3", 520, 320);
+      onkeydown = mykeydown2;
+    }
+
+    function mykeydown2(e) {
+      switch(e.keyCode) {
+        case 49:
+          data = [
+            [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
+            [6,0,0,0,0,0,6,6,6,0,0,6,6,6,0,0,0,0,0,6],
+            [6,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,6],
+            [6,0,0,0,6,6,6,6,6,0,0,6,6,6,6,6,0,0,0,6],
+            [6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,0,6,6,0,1,6,6,6,6,6,6,6,6,6],
+            [6,6,6,6,6,6,0,6,6,0,0,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,0,6,6,0,0,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,0,0,2,0,6,2,6,6,6,6,6,6,0,6],
+            [6,6,6,6,6,6,0,0,6,6,6,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
+          ];
+          init();
+        case 50:
+          data = [
+            [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
+            [6,0,0,0,0,0,6,6,6,0,0,6,6,6,0,0,0,0,0,6],
+            [6,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,6],
+            [6,0,0,0,6,6,6,6,6,0,0,6,6,6,6,6,0,0,0,6],
+            [6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,0,6,6,0,1,6,6,6,6,6,6,6,6,6],
+            [6,6,6,6,6,6,0,6,6,0,0,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,0,6,6,0,0,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,0,0,2,0,6,2,6,6,6,6,6,6,0,6],
+            [6,6,6,6,6,6,0,0,6,6,6,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
+          ];
+          init();
+        case 51:
+          data = [
+            [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
+            [6,0,0,0,0,0,6,6,6,0,0,6,6,6,0,0,0,0,0,6],
+            [6,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,6],
+            [6,0,0,0,6,6,6,6,6,0,0,6,6,6,6,6,0,0,0,6],
+            [6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,0,6,6,0,1,6,6,6,6,6,6,6,6,6],
+            [6,6,6,6,6,6,0,6,6,0,0,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,0,6,6,0,0,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,0,0,2,0,6,2,6,6,6,6,6,6,0,6],
+            [6,6,6,6,6,6,0,0,6,6,6,0,0,0,0,0,0,0,0,6],
+            [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
+          ];
+          init();
+      }
+    }
+
     function init() {
-      let gc0 = document.getElementById("canvas").getContext("2d");
-      gc0.fillStyle = "#aaaa55";
-      gc0.font = "100px Arial";
-      gc0.fillText("Carry it", 240, 200);
-      gc0.font = "40px Arial";
-      gc0.fillText("click this", 330, 300);
       onkeydown = mykeydown;
-      // window.addEventListener(click, function() {
-      //   update();
-      // });
+      update();
     }
 
     function l() {
@@ -124,13 +184,16 @@
   </script>
 </head>
 
-<body onload="init()">
+<body onload="title()">
   <canvas id="canvas" width="800" height="440"></canvas>
   <table>
     <tr><td></td><td><button onclick="u()">U</button></td><td></td></tr>
     <tr><td><button onclick="l()">L</button></td><td></td><td><button onclick="r()">R</button></td></tr>
     <tr><td></td><td><button onclick="d()">D</button></td><td></td></tr>
-  </table>    
+  </table>
+  <img id="stage1" src="images/stage1.png" style="display: none" onclick="init()">
+  <img id="stage2" src="images/stage2.png" style="display: none">
+  <img id="stage3" src="images/stage3.png" style="display: none">
   <img id="imgWall" src="images/wall3.jpg" style="display: none">
   <img id="imgGoal" src="images/circle2.png" style="display: none">
   <img id="imgLuggage" src="images/luggage2.png" style="display: none">
